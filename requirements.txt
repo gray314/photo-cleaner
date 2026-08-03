@@ -3,4 +3,4 @@ open-clip-torch
 torch
 torchvision
 scikit-learn
-tqdm
+numpy 
