@@ -83,6 +83,9 @@ def find_images(folder: Path):
 
     for path in folder.rglob("*"):
 
+        if DUPLICATE_FOLDER in path.parts:
+            continue
+
         if not path.is_file():
             continue
 
