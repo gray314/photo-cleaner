@@ -1,0 +1,6 @@
+pillow
+open-clip-torch
+torch
+torchvision
+scikit-learn
+tqdm
