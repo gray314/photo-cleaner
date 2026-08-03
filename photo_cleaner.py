@@ -118,26 +118,6 @@ def sha256(path: Path):
     return h.hexdigest()
 
 
-# ============================================================
-# Поиск точных дубликатов
-# ============================================================
-
-def find_exact_duplicates(images):
-
-    hashes = defaultdict(list)
-
-    for image in tqdm(images, desc="SHA256"):
-
-        hashes[sha256(image)].append(image)
-
-    groups = []
-
-    for files in hashes.values():
-
-        if len(files) > 1:
-            groups.append(files)
-
-    return groups
 
 
 # ============================================================
@@ -346,6 +326,24 @@ def find_similar_groups(
     files, similarity = build_similarity_matrix(embeddings)
 
     uf = UnionFind(len(files))
+
+    # -----------------------------------------
+    # Объединяем точные дубликаты (SHA256)
+    # -----------------------------------------
+
+    hashes = {}
+
+    for index, file in enumerate(files):
+
+        digest = sha256(file)
+
+        if digest in hashes:
+
+            uf.union(index, hashes[digest])
+
+        else:
+
+            hashes[digest] = index
 
     print()
     print("Searching similar images...")
@@ -720,13 +718,6 @@ def main():
         return
 
     print()
-    print("Searching exact duplicates...")
-
-    exact_groups = find_exact_duplicates(images)
-
-    print(f"Exact duplicate groups : {len(exact_groups)}")
-
-    print()
     print("Building embeddings...")
 
     embeddings = get_embeddings(images, root)
@@ -741,7 +732,7 @@ def main():
 
     print_statistics(
         images,
-        exact_groups,
+        [],
         similar_groups,
     )
 
