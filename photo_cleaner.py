@@ -23,6 +23,8 @@ from collections import defaultdict
 from tqdm import tqdm
 from PIL import Image
 
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # ============================================================
 # НАСТРОЙКИ
@@ -199,25 +201,30 @@ def load_model():
 # Embedding
 # ============================================================
 
-def image_embedding(path: Path):
+def image_embedding(path):
 
-    load_model()
+    try:
 
-    image = Image.open(path).convert("RGB")
+        image = Image.open(path).convert("RGB")
 
-    image = PREPROCESS(image)
+    except Exception as e:
 
-    image = image.unsqueeze(0)
+        print()
+        print(f"[WARNING] Cannot open image:")
+        print(f"  {path}")
+        print(f"  {e}")
 
-    image = image.to(DEVICE)
+        return None
+
+    image = preprocess(image).unsqueeze(0).to(device)
 
     with torch.no_grad():
 
-        embedding = MODEL.encode_image(image)
+        embedding = model.encode_image(image)
 
         embedding /= embedding.norm(dim=-1, keepdim=True)
 
-    return embedding.cpu().numpy()[0].astype(np.float32)
+    return embedding.cpu().numpy()[0]
 
 
 # ============================================================
@@ -239,6 +246,8 @@ def get_embeddings(images, folder):
 
     changed = False
 
+    skipped = []
+
     for image in tqdm(images, desc="OpenCLIP"):
 
         key = cache_key(image)
@@ -251,7 +260,11 @@ def get_embeddings(images, folder):
 
         emb = image_embedding(image)
 
-        embeddings[image] = emb
+        if emb is None:
+            skipped.append(image)
+            continue
+
+        embeddings[image.relative_to(root)] = emb
 
         cache[key] = emb.tolist()
 
@@ -259,6 +272,20 @@ def get_embeddings(images, folder):
 
     if changed:
         save_cache(folder, cache)
+
+    if skipped:
+
+        print()
+        print("=" * 70)
+        print("Unreadable images")
+        print("=" * 70)
+
+        for image in skipped:
+            print(image)
+
+        print()
+        print(f"Skipped: {len(skipped)} image(s)")
+        print("=" * 70)
 
     return embeddings
 
