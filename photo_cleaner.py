@@ -203,6 +203,8 @@ def load_model():
 
 def image_embedding(path):
 
+    load_model()
+
     try:
 
         image = Image.open(path).convert("RGB")
@@ -216,11 +218,11 @@ def image_embedding(path):
 
         return None
 
-    image = preprocess(image).unsqueeze(0).to(device)
+    image = PREPROCESS(image).unsqueeze(0).to(DEVICE)
 
     with torch.no_grad():
 
-        embedding = model.encode_image(image)
+        embedding = MODEL.encode_image(image)
 
         embedding /= embedding.norm(dim=-1, keepdim=True)
 
@@ -264,7 +266,7 @@ def get_embeddings(images, folder):
             skipped.append(image)
             continue
 
-        embeddings[image.relative_to(root)] = emb
+        embeddings[image] = emb
 
         cache[key] = emb.tolist()
 
