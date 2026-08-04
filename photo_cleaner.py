@@ -43,7 +43,7 @@ CACHE_FILE = ".photo_cleaner_cache.json"
 
 DUPLICATE_FOLDER = "Duplicates"
 
-SIMILARITY_THRESHOLD = 0.90
+SIMILARITY_THRESHOLD = 0.95
 
 
 # ============================================================
