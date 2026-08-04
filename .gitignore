@@ -1,0 +1,41 @@
+# Python
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtualenv
+
+venv/
+.venv/
+
+# macOS
+
+.DS_Store
+
+# Windows
+
+Thumbs.db
+
+# Cache
+
+.cache/
+photo_cache.json
+
+# IDE
+
+.idea/
+.vscode/
+
+# pytest
+
+.pytest_cache/
+
+# mypy
+
+.mypy_cache/
+
+# Ruff
+
+.ruff_cache/

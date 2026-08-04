@@ -1,6 +1,9 @@
-pillow
-open-clip-torch
 torch
 torchvision
+open-clip-torch
+numpy
+Pillow
+tqdm
 scikit-learn
-numpy 
+opencv-python
+pillow-heif
